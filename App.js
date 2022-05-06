@@ -1,11 +1,11 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import HomePage from './src/screens/HomePage';
+import AppRouter from './src/router/AppRouter';
 
 const App = () => {
   return (
     <SafeAreaView>
-      <HomePage />
+      <AppRouter />
     </SafeAreaView>
   );
 };
