@@ -4,9 +4,7 @@ import AppRouter from './src/router/AppRouter';
 
 const App = () => {
   return (
-    <SafeAreaView>
-      <AppRouter />
-    </SafeAreaView>
+    <AppRouter />
   );
 };
 

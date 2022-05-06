@@ -1,13 +1,13 @@
 import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 
-export default function HomePage() {
+export default function HomePage({ navigation }) {
 
   return (
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity style={styles.button} onPress={()=>{ alert("you clicked me") }}>
+            <TouchableOpacity style={styles.button} onPress={()=>{ navigation.navigate('Camera') }}>
               <Image style={styles.image} source={require("../assets/images/champ.jpg")}/>
             </TouchableOpacity>
           </View>
