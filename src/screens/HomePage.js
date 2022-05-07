@@ -1,14 +1,28 @@
-import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useStoreState } from 'easy-peasy'
+
+const defaultImage = require("../assets/images/champ.jpg")
 
 export default function HomePage({ navigation }) {
+
+  const [image, setImage] = useState(defaultImage)
+
+  const newImage = useStoreState((state) => state.images.image)
+
+  useEffect(() => {
+    console.log('ici')
+    if (newImage !== '') {
+      setImage({uri: newImage})
+    }
+  }, [newImage])
 
   return (
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerContainer}>
             <TouchableOpacity style={styles.button} onPress={()=>{ navigation.navigate('Camera') }}>
-              <Image style={styles.image} source={require("../assets/images/champ.jpg")}/>
+              <Image style={styles.image} source={image}/>
             </TouchableOpacity>
           </View>
           <View style={[styles.headerContainer, styles.titles]}>
@@ -83,7 +97,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   headerContainer: {
-    width: '50%'
+    width: '50%',
   },
   titles: {
     flex: 1
@@ -102,11 +116,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     overflow: 'hidden',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    height: 200
   },
   image: {
     padding: 10,
     width: '100%',
+    height: '100%',
     borderRadius: 20,
   }
 });

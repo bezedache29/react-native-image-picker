@@ -1,73 +1,73 @@
-import { View, Text, StyleSheet, Button } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import { Camera, useCameraDevices } from 'react-native-vision-camera'
-import { useStoreActions } from 'easy-peasy'
+import { View, PermissionsAndroid } from 'react-native'
+import React, { useEffect } from 'react'
+import { launchCamera } from 'react-native-image-picker';
+import { useStoreActions } from 'easy-peasy';
 
 export default function CameraPage({ navigation }) {
-  const devices = useCameraDevices('wide-angle-camera') // On utilise cette camera
-  const device = devices.back
-  const camera = useRef(null)
 
   const loadImage = useStoreActions((actions => actions.images.loadImage))
 
-  const [cameraPermission, setCameraPermission] = useState('denied') // denied par defaut - authorized quand le user accepte
-
   /**
-   * Fonction qui se trigger au click sur le btn de prise de photo
-   * On check si l'utilisateur a accepter de pouvoir utiliser sa camera
-   * On allume le flash pour prendre la photo
-   * Sa nous retourne un tableau de json avec entre autre le chemin de la photo
+   * Au lancement de la page
+   * On demande l'autorisation de la caméra et de l'ecriture dans le telephone, pour prendre une photo
    */
-  const takePhoto = async () => {
-    const res = await Camera.getCameraPermissionStatus()
-    if (res === 'authorized') {
-      const response = await camera.current.takePhoto({
-        flash: 'on'
-      })
-      console.log(response)
-
-      loadImage(response.path)
-      navigation.navigate('ShowImage')
-
-      // Ici il faut afficher la photo que l'on vient de prendre, pour ensuite l'accepter (envoie en DB), ou la refuser
-
-      // Le path est temporaire. des que l'appli est eteinte, l'image est supprimé
-      // Envoyer le fichier .jpg au server comme dans un formulaire file ?
-    }
-  }
-
-  /**
-   * Permet de demander a l'utilisateur d'accepter l'utilisation de sa camera
-   */
-  const checkCameraPersmission = async () => {
-    const response = await Camera.requestCameraPermission()
-    setCameraPermission(response)
-  }
-
   useEffect(() => {
-    checkCameraPersmission()
+    requestCameraPermission()
   }, [])
 
-  if (device == null) {
-    return <Text>Loading ...</Text>
-  } else if (cameraPermission === 'authorized') {
-    return (
-      <>
-        <Camera
-          style={StyleSheet.absoluteFill}
-          ref={camera}
-          device={device}
-          isActive={true}
-          preset="medium"
-          enableZoomGesture={true}
-          enableAutoStabilization={true}
-          fps={240}
-          photo={true}
-        />
-        <Button onPress={takePhoto} title='Take' />
-      </>
-    )
+  /**
+   * Fonction qui demande l'autorisation de la camera et les droits d'écriture dans le tel
+   * Si ok, on lance la camera pour prendre une photo et la save dans le telephone
+   */
+  const requestCameraPermission = async () => {
+
+    const grantedcamera = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA
+    );
+
+    const grantedstorage = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    );
+
+    if (grantedcamera === PermissionsAndroid.RESULTS.GRANTED && grantedstorage ===  PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("Camera & storage permission given");
+        
+      const options = {
+        mediaType: 'photo', // Uniquement la photo
+        saveToPhotos: true,  // Sauvegarde la photo temporaire et dans le dossier pictures
+        includeBase64: false,
+        storageOptions: {
+          skipBackup: true,
+          path: 'images'
+        }
+      };
+  
+      launchCamera(options, (res) => {
+        console.log('Response = ', res);
+  
+        if (res.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (res.error) {
+          console.log('ImagePicker Error: ', res.error);
+        } else if (res.customButton) {
+          console.log('User tapped custom button: ', res.customButton);
+          alert(res.customButton);
+        } else {
+          const source = { uri: res.assets[0].uri };
+          console.log('response', JSON.stringify(res));
+
+          loadImage(source.uri)
+          navigation.navigate('Home')
+        }
+      });
+  
+    } else {
+      console.log("Camera permission denied");
+    }
+
   }
 
-  return <View></View>
+  return (
+    <View></View>
+  )
 }
