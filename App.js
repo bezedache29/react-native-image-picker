@@ -1,10 +1,13 @@
+import { StoreProvider } from 'easy-peasy';
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 import AppRouter from './src/router/AppRouter';
+import store from './src/store/store';
 
 const App = () => {
   return (
-    <AppRouter />
+    <StoreProvider store={store}>
+      <AppRouter />
+    </StoreProvider>
   );
 };
 

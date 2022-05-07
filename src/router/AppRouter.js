@@ -2,6 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import HomePage from '../screens/HomePage'
 import CameraPage from '../screens/CameraPage'
+import ShowImage from '../screens/ShowImage';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
@@ -14,6 +15,7 @@ export default function AppRouter() {
       <Stack.Navigator initialRouteName="Home" gestureEnabled="true">
         <Stack.Screen name="Home" component={HomePage} />
         <Stack.Screen name="Camera" component={CameraPage} />
+        <Stack.Screen name="ShowImage" component={ShowImage} />
       </Stack.Navigator>
     </NavigationContainer>
     
