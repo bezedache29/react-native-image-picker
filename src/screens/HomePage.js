@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useStoreState } from 'easy-peasy'
+import axios from 'axios';
 
 const defaultImage = require("../assets/images/champ.jpg")
 
@@ -11,7 +12,6 @@ export default function HomePage({ navigation }) {
   const newImage = useStoreState((state) => state.images.image)
 
   useEffect(() => {
-    console.log('ici')
     if (newImage !== '') {
       setImage({uri: newImage})
     }
